@@ -3,18 +3,18 @@ from scipy.signal import find_peaks
 import pygame
 import time
 
-filename = "audios/0.wav"
+audio_path = "audios/0.wav"
 sampling_rate = 10 # In hertz
 interval = 1.5 # In seconds
 
-samples, sampling_rate = librosa.load(filename, sr=sampling_rate, mono=True)
+samples, sampling_rate = librosa.load(audio_path, sr=sampling_rate, mono=True)
 
 samples = librosa.amplitude_to_db(samples)
 peaks_indexes, _ = find_peaks(samples, distance=interval*sampling_rate, prominence=1)
 
 peaks_indexes_set = set(peaks_indexes)
 pygame.mixer.init()
-sound = pygame.mixer.Sound(filename)
+sound = pygame.mixer.Sound(audio_path)
 pygame.display.set_caption("Audio peaks flashing viewer")
 display = pygame.display.set_mode((500, 500))
 start_time = time.time() * 1000 # In milliseconds
