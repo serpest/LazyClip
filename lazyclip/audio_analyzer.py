@@ -4,15 +4,14 @@ from scipy.signal import find_peaks
 
 def fragment_audio(audio_path, min_duration, max_duration, sampling_rate=10):
     amplitude_samples, sampling_rate = librosa.load(audio_path, sr=sampling_rate, mono=True)
-    decibel_samples = librosa.amplitude_to_db(amplitude_samples)
-    peaks_indexes = find_audio_peaks(decibel_samples, sampling_rate, min_duration)
+    peaks_indexes = find_audio_peaks(amplitude_samples, sampling_rate, min_duration)
     samples_indexes = adjust_samples_indexes(peaks_indexes, sampling_rate, min_duration, max_duration)
     interval_durations = compute_interval_durations(samples_indexes, sampling_rate)
     return interval_durations
 
-def find_audio_peaks(decibel_samples, sampling_rate, peaks_min_distance):
+def find_audio_peaks(samples, sampling_rate, peaks_min_distance):
     peaks_min_samples_distance = sampling_rate * peaks_min_distance
-    peaks_indexes, _ = find_peaks(decibel_samples, distance=peaks_min_samples_distance, prominence=1) # The prominence value 1 was chosen heuristically
+    peaks_indexes, _ = find_peaks(samples, distance=peaks_min_samples_distance)
     return peaks_indexes
 
 def adjust_samples_indexes(peaks_indexes, sampling_rate, min_duration, max_duration):
