@@ -1,5 +1,5 @@
-from audio_analyzer import fragment_audio
-from clip_maker import generate_image_sequence_clip
+from lazyclip.audio_analyzer import fragment_audio
+from lazyclip.clip_maker import generate_image_sequence_clip
 
 audio_path = input("Enter the audio path: ")
 number_of_images = int(input("Enter the number of images: "))
