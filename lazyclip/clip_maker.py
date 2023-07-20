@@ -20,7 +20,7 @@ def resize_image_with_padding(image, target_size):
     padded_image.paste(resized_image, (x_offset, y_offset))
     return padded_image
 
-def generate_image_sequence_clip(audio_path, image_paths, image_durations, frame_size, frame_rate, clip_path):
+def generate_image_sequence_clip(audio_path, image_paths, image_durations, clip_path, frame_size=(1920, 1080), frame_rate=(30)):
     clip_duration = sum(image_durations)
     with TemporaryDirectory() as resized_image_dir:
         index = 0

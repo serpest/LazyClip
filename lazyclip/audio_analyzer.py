@@ -3,7 +3,6 @@ import numpy
 from scipy.signal import find_peaks
 
 def fragment_audio(audio_path, min_duration, max_duration, sampling_rate=10):
-    # TODO: interval are needed, not times
     amplitude_samples, sampling_rate = librosa.load(audio_path, sr=sampling_rate, mono=True)
     decibel_samples = librosa.amplitude_to_db(amplitude_samples)
     peaks_indexes = find_audio_peaks(decibel_samples, sampling_rate, min_duration)
