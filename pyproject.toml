@@ -1,0 +1,59 @@
+[tool.briefcase]
+project_name = "LazyClip"
+bundle = "com.serpest"
+version = "0.1"
+url = "https://github.com/serpest/LazyClip"
+license = "GNU General Public License v3.0"
+author = "serpest"
+author_email = "serpest@protonmail.com"
+
+[tool.briefcase.app.lazyclip]
+formal_name = "LazyClip"
+description = "Automated clip maker"
+long_description = "Automated video clip maker that synchronizes image transitions with the rhythm of the audio"
+icon = "src/lazyclip/resources/lazyclip"
+sources = ["src/lazyclip"]
+test_sources = ["tests"]
+requires = ["librosa", "Pillow", "moviepy", "setuptools"]
+test_requires = ["pytest"]
+
+[tool.briefcase.app.lazyclip.macOS]
+requires = ["toga-cocoa~=0.3.1", "std-nslog~=1.0.0"]
+
+[tool.briefcase.app.lazyclip.linux]
+requires = ["toga-gtk~=0.3.1"]
+
+[tool.briefcase.app.lazyclip.linux.system.debian]
+system_requires = ["libcairo2-dev", "libgirepository1.0-dev"]
+system_runtime_requires = ["gir1.2-gtk-3.0", "libgirepository-1.0-1", "libcanberra-gtk3-module"]
+
+[tool.briefcase.app.lazyclip.linux.system.rhel]
+system_requires = ["cairo-gobject-devel", "gobject-introspection-devel"]
+system_runtime_requires = ["gobject-introspection", "gtk3", "libcanberra-gtk3"]
+
+[tool.briefcase.app.lazyclip.linux.system.arch]
+system_requires = ["cairo", "gobject-introspection", "gtk3", "libcanberra"]
+system_runtime_requires = ["gtk3", "gobject-introspection-runtime", "libcanberra"]
+
+[tool.briefcase.app.lazyclip.linux.appimage]
+manylinux = "manylinux2014"
+system_requires = ["cairo-gobject-devel", "gobject-introspection-devel", "gtk3-devel", "libcanberra-gtk3", "PackageKit-gtk3-module", "gvfs-client"]
+linuxdeploy_plugins = ["DEPLOY_GTK_VERSION=3 gtk"]
+
+[tool.briefcase.app.lazyclip.linux.flatpak]
+flatpak_runtime = "org.gnome.Platform"
+flatpak_runtime_version = "44"
+flatpak_sdk = "org.gnome.Sdk"
+
+[tool.briefcase.app.lazyclip.windows]
+requires = ["toga-winforms~=0.3.1"]
+
+[tool.briefcase.app.lazyclip.iOS]
+requires = ["toga-iOS~=0.3.1", "std-nslog~=1.0.0"]
+
+[tool.briefcase.app.lazyclip.android]
+requires = ["toga-android~=0.3.1"]
+
+[tool.briefcase.app.lazyclip.web]
+requires = ["toga-web~=0.3.1"]
+style_framework = "Shoelace v2.3"
