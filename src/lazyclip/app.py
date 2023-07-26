@@ -1,6 +1,8 @@
+import asyncio
 import toga
 from toga.style import Pack
 from toga.style.pack import COLUMN, ROW
+from concurrent.futures import ThreadPoolExecutor
 
 from lazyclip.audio_analyzer import fragment_audio
 from lazyclip.clip_maker import generate_image_sequence_clip
@@ -30,7 +32,7 @@ class LazyClip(toga.App):
         clip_path_box.add(self.clip_path_input)
         clip_path_box.add(clip_path_select_button)
         # Generation button
-        self.generation_button = toga.Button("Generate clip", on_press=self.generate_clip, style=Pack(padding_right=5, padding_left=5, padding_top = 10))
+        self.generation_button = toga.Button("Generate clip", on_press=self.handle_clip_generation, style=Pack(padding_right=5, padding_left=5, padding_top = 10))
         # Main box
         main_box = toga.Box(style=Pack(direction=COLUMN))
         main_box.add(audio_path_box)
@@ -67,8 +69,9 @@ class LazyClip(toga.App):
             return
         self.clip_path_input.value = str(path)
 
-    def generate_clip(self, widget):
+    async def handle_clip_generation(self, widjet):
         self.generation_button.enabled = False
+        self.generation_button.text = "Generating clip..."
         audio_path = self.audio_path_input.value
         image_paths = self.get_image_paths()
         number_of_images = len(image_paths)
@@ -77,21 +80,32 @@ class LazyClip(toga.App):
         frame_rate = 30
         min_image_duration = 2 # In seconds
         max_image_duration = 6 # In seconds
+        with ThreadPoolExecutor(1) as executor:
+            future = executor.submit(self.generate_clip, audio_path, number_of_images, image_paths, clip_path, frame_size, frame_rate, min_image_duration, max_image_duration)
+            while future.done() is False:
+                await asyncio.sleep(1)
+            exit_code = future.result()
+        self.finalize_clip_generation(exit_code, clip_path)
+
+    def generate_clip(self, audio_path, number_of_images, image_paths, clip_path, frame_size, frame_rate, min_image_duration, max_image_duration):
         try:
-            self.generation_button.text = "Fragmenting audio..."
             audio_interval_durations = fragment_audio(audio_path, min_image_duration, max_image_duration)
             image_durations = audio_interval_durations[:number_of_images]
-            self.generation_button.text = "Generating clip..."
             generate_image_sequence_clip(audio_path, image_paths, image_durations, clip_path, frame_size, frame_rate)
-            self.main_window.info_dialog("Clip generated", f"Clip correctly saved as \"{clip_path}\"")
+            return 0
         except:
+            return 1
+    
+    def finalize_clip_generation(self, exit_code, clip_path):
+        if exit_code == 0:
+            self.main_window.info_dialog("Clip generated", f"Clip correctly saved as \"{clip_path}\".")
+        else:
             self.main_window.error_dialog("Clip not generated", f"The clip could not be generated. Check the correctness of the inputs.")
-        finally:
-            self.generation_button.text = "Generate clip"
-            self.generation_button.enabled = True
+        self.generation_button.text = "Generate clip"
+        self.generation_button.enabled = True
 
     def get_image_paths(self):
-        return [raw_path.strip() for raw_path in self.image_paths_input.value.split("\n") if raw_path != ""]        
-
+        return [raw_path.strip() for raw_path in self.image_paths_input.value.split("\n") if raw_path != ""]
+    
 def main():
     return LazyClip()
